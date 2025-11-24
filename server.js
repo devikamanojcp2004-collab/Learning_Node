@@ -1,22 +1,36 @@
 import { log } from 'console';
-import http from 'http';
-//.env FILES
-const PORT=process.env.PORT;
+import http from 'http';//import http module
+const PORT=process.env.PORT;//.env FILES
+import fs from 'fs/promise';//imported fs module for file write ,read etc
+import url from 'url';
+import path from 'path';// imported path module for using file paths
+
+const __filename = url.fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 //CREATING A HTTP SERVER
-const server=http.createServer((req,res)=>{
+const server=http.createServer(async(req,res)=>{
+  let filePath;
     //USING TRY CATCH SIMPLE ROUTE[WORKS ONLY IF ITS GET METHOD]
     try {
         if(req.method==='GET'){
           if(req.url==='/'){
-            res.writeHead(200,{"Content-Type":"text/html"})
-            res.end("<h1>HOME PAGE</h1>")
+            filePath=path.join(__dirname,'public','index.html')//THIS LINE IS USED WHILE USING PATH AND URL MODIULE
+            // res.writeHead(200,{"Content-Type":"text/html"})//SIMPLE ROUTER METHOD
+            // res.end("<h1>HOME PAGE</h1>")//SIMPLE ROUTER METHOD
           }else if(req.url==='/about'){
-           res.writeHead(200,{"Content-Type":"text/html"})
-           res.end("<h1>ABOUT</h1>")
+            filePath=path.join(__dirname,'public','about.html')//THIS LINE IS USED WHILE USING PATH AND URL MODIULE
+          //  res.writeHead(200,{"Content-Type":"text/html"})//SIMPLE ROUTER METHOD
+          //  res.end("<h1>ABOUT</h1>")//SIMPLE ROUTER METHOD
           }else{
-            res.writeHead(404,{"Content-Type":"text/plain"})
-            res.end("not found")
+            throw new Error("file not found")
+            // res.writeHead(404,{"Content-Type":"text/plain"})//SIMPLE ROUTER METHOD
+            // res.end("not found")//SIMPLE ROUTER METHOD
           }
+          const data= await fs.readFile(filepath);
+          res.setHeader('Content-Type','text/html');
+          res.write(data);
+          res.end();
         }else{
             throw new Error("method not allowed")
         }
